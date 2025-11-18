@@ -1,13 +1,18 @@
 # Shopify Loyalty App
 
-> **Demo repository: Shopify loyalty integration with Loyalteez**  
-> Example implementation for integrating Shopify webhooks with Loyalteez rewards platform
+> **Demo repository: Shopify loyalty integration with Loyalteez Testnet**  
+> Example implementation for integrating Shopify webhooks with Loyalteez rewards platform (testnet)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![Testnet](https://img.shields.io/badge/Network-Testnet-orange)](https://docs.loyalteez.app/guides/testnet)
 
-> **⚠️ Demo Repository**  
-> This is a **demo/example repository** for educational purposes. It demonstrates how to integrate Shopify webhooks with the Loyalteez API. While the code is functional and tested, it's intended as a reference implementation rather than a production-ready solution.
+> **⚠️ Demo Repository - Testnet Implementation**  
+> This is a **demo/example repository** for educational purposes. It demonstrates how to integrate Shopify webhooks with the **Loyalteez Testnet API**. 
+> 
+> **Important**: This implementation uses the **testnet** (`api.loyalteez.xyz`), not production. For production use, update the API URL to `api.loyalteez.app` and use a real brand ID.
+> 
+> While the code is functional and tested, it's intended as a reference implementation rather than a production-ready solution.
 > 
 > **For production use**, please:
 > - Review and adapt the code to your specific needs
@@ -16,7 +21,9 @@
 > - Add comprehensive testing
 > - Follow your organization's deployment standards
 
-**What this does:** Automatically rewards your Shopify customers with LTZ tokens when they make purchases, sign up, or complete other actions. Fully integrated with Loyalteez blockchain-powered loyalty platform.
+**What this does:** Automatically rewards your Shopify customers with LTZ tokens when they make purchases, sign up, or complete other actions. Fully integrated with Loyalteez blockchain-powered loyalty platform (**testnet**).
+
+**Network**: This demo uses **Loyalteez Testnet** (`api.loyalteez.xyz`). See [Testnet Documentation](https://docs.loyalteez.app/guides/testnet) for details.
 
 ---
 
@@ -32,7 +39,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/loyalteez/shopify-loyalty-app.git
+git clone https://github.com/Alpha4-Labs/shopify-loyalty-app.git
 cd shopify-loyalty-app
 
 # Install dependencies
@@ -114,9 +121,10 @@ Balance updates automatically
 SHOPIFY_WEBHOOK_SECRET=your_webhook_secret_here
 SHOPIFY_SHOP_DOMAIN=your-store.myshopify.com
 
-# Loyalteez Configuration
-LOYALTEEZ_BRAND_ID=0x0000000000000000000000000000000000000000  # Optional for testnet
-LOYALTEEZ_API_URL=https://api.loyalteez.xyz  # Testnet URL
+# Loyalteez Configuration (TESTNET)
+LOYALTEEZ_BRAND_ID=0x0000000000000000000000000000000000000000  # Placeholder for testnet
+LOYALTEEZ_API_URL=https://api.loyalteez.xyz  # TESTNET URL (default)
+# For production: use https://api.loyalteez.app and real brand ID
 
 # Server Configuration
 PORT=3000
@@ -286,7 +294,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 🆘 Support
 
 - **Documentation**: [docs.loyalteez.app](https://docs.loyalteez.app)
-- **Issues**: [GitHub Issues](https://github.com/loyalteez/shopify-loyalty-app/issues)
+- **Issues**: [GitHub Issues](https://github.com/Alpha4-Labs/shopify-loyalty-app/issues)
 - **Email**: support@loyalteez.app
 - **Discord**: [discord.gg/loyalteez](https://discord.gg/loyalteez)
 
