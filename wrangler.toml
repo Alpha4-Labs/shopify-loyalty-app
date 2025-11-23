@@ -8,12 +8,13 @@ compatibility_flags = ["nodejs_compat"]
 # LOYALTEEZ_BRAND_ID (optional)
 # LOYALTEEZ_API_URL (optional, defaults to testnet)
 
+# Custom Domain Route
+routes = [
+	{ pattern = "shopify.loyalteez.app", custom_domain = true }
+]
+
 [env.production]
 vars = { }
 
 [env.staging]
 vars = { }
-
-# Routes (configure in Cloudflare dashboard)
-# Example: shopify-loyalty-app.your-username.workers.dev
-
