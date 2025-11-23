@@ -22,10 +22,12 @@ class WebhookHandler {
    * 
    * @param {string} topic - Webhook topic (e.g., 'orders/create')
    * @param {Object} data - Webhook payload data
+   * @param {string} shopDomain - Shopify store domain
    * @returns {Promise<Object>} - Processing result
    */
-  async handle(topic, data) {
-    console.log(`📨 Processing webhook: ${topic}`);
+  async handle(topic, data, shopDomain = null) {
+    console.log(`📨 Processing webhook: ${topic} from ${shopDomain || 'unknown'}`);
+    this.shopDomain = shopDomain;
     
     try {
       switch (topic) {
@@ -116,7 +118,8 @@ class WebhookHandler {
       email,
       orderTotal,
       orderId,
-      orderUrl
+      orderUrl,
+      this.shopDomain
     );
     
     console.log(`✅ Rewarded ${email}: ${reward.total_ltz} LTZ`);
@@ -179,7 +182,7 @@ class WebhookHandler {
     console.log(`👤 New customer: ${email}`);
     
     // Send welcome bonus
-    await this.loyalteez.rewardSignup(email, customerId);
+    await this.loyalteez.rewardSignup(email, customerId, this.shopDomain);
     
     console.log(`✅ Welcome bonus sent to ${email}`);
     

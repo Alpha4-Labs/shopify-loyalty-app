@@ -12,7 +12,7 @@
 // - LOYALTEEZ_BRAND_ID (optional for testnet)
 // - LOYALTEEZ_API_URL (defaults to testnet)
 
-const LOYALTEEZ_API_BASE = 'https://api.loyalteez.xyz';
+const LOYALTEEZ_API_BASE = 'https://api.loyalteez.app'; // Default to Mainnet
 const LOYALTEEZ_ENDPOINT = `${LOYALTEEZ_API_BASE}/loyalteez-api/manual-event`;
 
 /**
@@ -112,7 +112,7 @@ async function handleWebhook(request, env, corsHeaders) {
     }));
     
     // Process webhook asynchronously
-    processWebhook(topic, data, env).catch(error => {
+    processWebhook(topic, data, env, shop).catch(error => {
       console.error('❌ Error processing webhook:', error);
     });
     
@@ -133,15 +133,15 @@ async function handleWebhook(request, env, corsHeaders) {
 /**
  * Process webhook asynchronously
  */
-async function processWebhook(topic, data, env) {
+async function processWebhook(topic, data, env, shopDomain) {
   const brandId = env.LOYALTEEZ_BRAND_ID || '0x0000000000000000000000000000000000000000';
   const apiUrl = env.LOYALTEEZ_API_URL || LOYALTEEZ_API_BASE;
   
   try {
     if (topic === 'orders/create') {
-      await handleOrderCreated(data, brandId, apiUrl);
+      await handleOrderCreated(data, brandId, apiUrl, shopDomain);
     } else if (topic === 'customers/create') {
-      await handleCustomerCreated(data, brandId, apiUrl);
+      await handleCustomerCreated(data, brandId, apiUrl, shopDomain);
     } else {
       console.log(`ℹ️  Unhandled topic: ${topic}`);
     }
@@ -154,7 +154,7 @@ async function processWebhook(topic, data, env) {
 /**
  * Handle order creation
  */
-async function handleOrderCreated(order, brandId, apiUrl) {
+async function handleOrderCreated(order, brandId, apiUrl, shopDomain) {
   const email = order.customer?.email;
   const orderTotal = parseFloat(order.total_price || 0);
   
@@ -167,10 +167,12 @@ async function handleOrderCreated(order, brandId, apiUrl) {
   const bonus = orderTotal >= 100 ? 1000 : 0;
   
   // Send base purchase reward
-  await sendLoyalteezEvent('shopify_purchase', email, brandId, apiUrl, {
+  // Using standard event 'place_order'
+  await sendLoyalteezEvent('place_order', email, brandId, apiUrl, {
     order_id: order.id,
     order_total: orderTotal,
-    ltz_earned: ltzAmount
+    ltz_earned: ltzAmount,
+    domain: shopDomain
   });
   
   // Send bonus if applicable
@@ -178,7 +180,8 @@ async function handleOrderCreated(order, brandId, apiUrl) {
     await sendLoyalteezEvent('shopify_large_order', email, brandId, apiUrl, {
       order_id: order.id,
       order_total: orderTotal,
-      bonus_ltz: bonus
+      bonus_ltz: bonus,
+      domain: shopDomain
     });
   }
   
@@ -188,7 +191,7 @@ async function handleOrderCreated(order, brandId, apiUrl) {
 /**
  * Handle customer creation
  */
-async function handleCustomerCreated(customer, brandId, apiUrl) {
+async function handleCustomerCreated(customer, brandId, apiUrl, shopDomain) {
   const email = customer.email;
   
   if (!email) {
@@ -196,9 +199,11 @@ async function handleCustomerCreated(customer, brandId, apiUrl) {
     return;
   }
   
-  await sendLoyalteezEvent('shopify_signup', email, brandId, apiUrl, {
+  // Using standard event 'account_creation'
+  await sendLoyalteezEvent('account_creation', email, brandId, apiUrl, {
     customer_id: customer.id,
-    ltz_earned: 500
+    ltz_earned: 500,
+    domain: shopDomain
   });
   
   console.log(`✅ Welcome bonus sent to ${email}`);
@@ -208,11 +213,14 @@ async function handleCustomerCreated(customer, brandId, apiUrl) {
  * Send event to Loyalteez API
  */
 async function sendLoyalteezEvent(eventType, userEmail, brandId, apiUrl, metadata = {}) {
+  // Use passed domain if available, otherwise default
+  const domain = metadata.domain || 'shopify-store';
+  
   const payload = {
     brandId,
     eventType,
     userEmail,
-    domain: 'shopify-store',
+    domain: domain,
     metadata: {
       platform: 'shopify',
       timestamp: new Date().toISOString(),
@@ -266,4 +274,3 @@ async function verifyWebhook(body, hmac, secret) {
   
   return result === 0;
 }
-

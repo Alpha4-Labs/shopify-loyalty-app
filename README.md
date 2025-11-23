@@ -1,29 +1,15 @@
 # Shopify Loyalty App
 
-> **Demo repository: Shopify loyalty integration with Loyalteez Testnet**  
-> Example implementation for integrating Shopify webhooks with Loyalteez rewards platform (testnet)
+> **Production-ready Shopify loyalty integration with Loyalteez**  
+> Example implementation for integrating Shopify webhooks with Loyalteez rewards platform.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
-[![Testnet](https://img.shields.io/badge/Network-Testnet-orange)](https://docs.loyalteez.app/guides/testnet)
+[![Production Ready](https://img.shields.io/badge/Status-Production%20Ready-green)](https://docs.loyalteez.app)
 
-> **⚠️ Demo Repository - Testnet Implementation**  
-> This is a **demo/example repository** for educational purposes. It demonstrates how to integrate Shopify webhooks with the **Loyalteez Testnet API**. 
-> 
-> **Important**: This implementation uses the **testnet** (`api.loyalteez.xyz`), not production. For production use, update the API URL to `api.loyalteez.app` and use a real brand ID.
-> 
-> While the code is functional and tested, it's intended as a reference implementation rather than a production-ready solution.
-> 
-> **For production use**, please:
-> - Review and adapt the code to your specific needs
-> - Add proper error handling and monitoring
-> - Implement rate limiting and security best practices
-> - Add comprehensive testing
-> - Follow your organization's deployment standards
+**What this does:** Automatically rewards your Shopify customers with LTZ tokens when they make purchases, sign up, or complete other actions. Fully integrated with Loyalteez blockchain-powered loyalty platform.
 
-**What this does:** Automatically rewards your Shopify customers with LTZ tokens when they make purchases, sign up, or complete other actions. Fully integrated with Loyalteez blockchain-powered loyalty platform (**testnet**).
-
-**Network**: This demo uses **Loyalteez Testnet** (`api.loyalteez.xyz`). See [Testnet Documentation](https://docs.loyalteez.app/guides/testnet) for details.
+**Network**: This app defaults to **Loyalteez Mainnet** (`api.loyalteez.app`). To use Testnet, set `LOYALTEEZ_API_URL=https://api.loyalteez.xyz`.
 
 ---
 
@@ -33,7 +19,7 @@
 
 - Node.js 18+ installed
 - A Shopify store (any plan, including Partner development stores)
-- A Loyalteez account ([partners.loyalteez.xyz](https://partners.loyalteez.xyz)) - Free to start
+- A Loyalteez account ([partners.loyalteez.app](https://partners.loyalteez.app))
 
 ### Installation
 
@@ -72,7 +58,7 @@ Your server will start on `http://localhost:3000`
 ✅ **Webhook Integration** - Secure, verified Shopify webhook handling  
 ✅ **Production Ready** - Error handling, logging, monitoring endpoints  
 ✅ **Multiple Deployment Options** - Railway, Cloudflare Workers, or any Node.js host  
-✅ **Testnet Compatible** - Works with Loyalteez testnet (no brand ID required)  
+✅ **Standard Events** - Uses standard automation events (`place_order`, `account_creation`)  
 ✅ **Comprehensive Documentation** - Step-by-step guides and examples  
 
 ---
@@ -88,7 +74,7 @@ Shopify sends webhook to your app
     ↓
 Your app verifies webhook signature
     ↓
-Your app calls Loyalteez API
+Your app calls Loyalteez API (Mainnet)
     ↓
 Customer receives LTZ tokens
     ↓
@@ -119,16 +105,17 @@ Balance updates automatically
 ```bash
 # Shopify Configuration
 SHOPIFY_WEBHOOK_SECRET=your_webhook_secret_here
+# Optional: Verify requests match this domain
 SHOPIFY_SHOP_DOMAIN=your-store.myshopify.com
 
-# Loyalteez Configuration (TESTNET)
-LOYALTEEZ_BRAND_ID=0x0000000000000000000000000000000000000000  # Placeholder for testnet
-LOYALTEEZ_API_URL=https://api.loyalteez.xyz  # TESTNET URL (default)
-# For production: use https://api.loyalteez.app and real brand ID
+# Loyalteez Configuration
+LOYALTEEZ_BRAND_ID=0xYourBrandWalletAddress
+LOYALTEEZ_API_URL=https://api.loyalteez.app  # Default: Mainnet
+# For testnet: use https://api.loyalteez.xyz
 
 # Server Configuration
 PORT=3000
-NODE_ENV=development
+NODE_ENV=production
 ```
 
 See [.env.example](./.env.example) for all available options.
@@ -149,7 +136,7 @@ railway init
 
 # Set environment variables
 railway variables set SHOPIFY_WEBHOOK_SECRET=your_secret
-railway variables set LOYALTEEZ_API_URL=https://api.loyalteez.xyz
+railway variables set LOYALTEEZ_BRAND_ID=your_brand_id
 
 # Deploy
 railway up
@@ -219,12 +206,13 @@ In your Shopify admin:
 
 ### 2. Configure Reward Rules
 
-In your Loyalteez dashboard:
-1. Go to **Rules**
-2. Create rules for:
-   - `shopify_purchase` - Base purchase rewards
-   - `shopify_signup` - Welcome bonus
-   - `shopify_large_order` - Large order bonuses
+In your Loyalteez dashboard (Settings > Automation):
+1. Enable **Automation**
+2. Select **E-commerce** industry template
+3. Configure rules for:
+   - `Place Order` (triggered by `orders/create`)
+   - `Create Account` (triggered by `customers/create`)
+   - `Refer a Friend` (triggered by referral events)
 
 ### 3. Test with a Real Order
 
@@ -236,12 +224,12 @@ In your Loyalteez dashboard:
 
 ## 🎯 Supported Events
 
-| Event | Trigger | Default Reward |
-|-------|---------|----------------|
-| `orders/create` | Customer places order | 10 LTZ per $1 spent |
-| `orders/paid` | Payment confirmed | Logged (no reward) |
-| `customers/create` | New customer signup | 500 LTZ welcome bonus |
-| `customers/update` | Profile updated | Logged (no reward) |
+| Event | Trigger | Loyalteez Event Name |
+|-------|---------|----------------------|
+| `orders/create` | Customer places order | `place_order` |
+| `customers/create` | New customer signup | `account_creation` |
+| `orders/paid` | Payment confirmed | (Logged only) |
+| `customers/update` | Profile updated | (Logged only) |
 
 Customize rewards in your Loyalteez dashboard.
 
@@ -250,9 +238,9 @@ Customize rewards in your Loyalteez dashboard.
 ## 🔒 Security
 
 - ✅ **HMAC Signature Verification** - All webhooks verified with Shopify's signature
+- ✅ **Domain Verification** - Validates requests come from your specific shop
 - ✅ **Environment Variables** - Secrets never committed to code
 - ✅ **Error Handling** - Graceful failures, no sensitive data leaked
-- ✅ **Rate Limiting** - Can be added via middleware
 
 ---
 
@@ -309,4 +297,3 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ---
 
 **Ready to launch your loyalty program?** [Get started →](./docs/SETUP.md)
-

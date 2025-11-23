@@ -174,7 +174,7 @@ app.post('/webhooks/shopify', async (req, res) => {
     // This allows us to respond fast even if Loyalteez API is slow
     setImmediate(async () => {
       try {
-        const result = await webhookHandler.handle(topic, data);
+        const result = await webhookHandler.handle(topic, data, shop);
         console.log(`✅ Webhook processed successfully:`, {
           topic,
           success: result.success,
