@@ -75,7 +75,7 @@ async function simulateWebhook() {
         'X-Shopify-Topic': topic,
         'X-Shopify-Shop-Domain': SHOP_DOMAIN,
         'X-Shopify-Hmac-Sha256': hmac,
-        'X-Shopify-Api-Version': '2024-10',
+        'X-Shopify-Api-Version': '2025-10',
         'Content-Type': 'application/json'
       }
     });

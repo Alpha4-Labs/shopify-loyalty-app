@@ -201,8 +201,8 @@ In your Shopify admin:
 4. Configure:
    - **Event**: Order creation
    - **Format**: JSON
-   - **URL**: `https://your-app-url.com/webhooks/shopify`
-   - **API version**: 2024-10 (latest)
+   - **URL**: `https://shopify.loyalteez.app/webhooks/shopify`
+   - **API version**: 2025-10 (Latest)
 
 ### 2. Configure Reward Rules
 
