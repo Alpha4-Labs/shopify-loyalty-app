@@ -38,7 +38,7 @@ if (missingVars.length > 0 && NODE_ENV === 'production') {
 // Initialize Loyalteez client
 const loyalteez = new LoyalteezClient(
   process.env.LOYALTEEZ_BRAND_ID,
-  process.env.LOYALTEEZ_API_URL || 'https://api.loyalteez.xyz'
+  process.env.LOYALTEEZ_API_URL || 'https://api.loyalteez.app'
 );
 
 // Initialize webhook handler
@@ -66,28 +66,88 @@ app.use((req, res, next) => {
 // ROUTES
 // ==========================================
 
+const { landingPage } = require('./landing-page');
+
+// ... (rest of imports)
+
+// ==========================================
+// MIDDLEWARE
+// ==========================================
+
+// ... (middleware setup)
+
+// ==========================================
+// ROUTES
+// ==========================================
+
 /**
- * Health check endpoint
+ * Root endpoint - Serve Landing Page
  */
 app.get('/', (req, res) => {
-  res.json({
-    status: 'ok',
-    service: 'shopify-loyalty-app',
-    version: '1.0.0',
-    timestamp: new Date().toISOString(),
-    environment: NODE_ENV,
-    endpoints: {
-      webhooks: '/webhooks/shopify',
-      health: '/health',
-      test: '/test/reward'
+  res.send(landingPage);
+});
+
+/**
+ * Simulation Endpoint
+ */
+app.post('/simulate', async (req, res) => {
+  try {
+    const { email, amount, domain } = req.body;
+    
+    if (!email || !amount) {
+      return res.status(400).json({ error: 'Missing email or amount' });
     }
-  });
+
+    // Generate order ID and customer ID
+    const orderId = Math.floor(Math.random() * 1000000000);
+    const customerId = Math.floor(Math.random() * 1000000000);
+    
+    // Simulate Shopify Payload
+    const mockOrder = {
+      id: orderId,
+      email: email,
+      total_price: String(amount),
+      currency: 'USD',
+      test: true,
+      customer: {
+        id: customerId,
+        email: email,
+        first_name: 'Test',
+        last_name: 'User'
+      }
+    };
+
+    // Use the existing webhookHandler to process the simulated order
+    // We pass the domain to match the logic in worker.js
+    const shopDomain = domain || 'shopify-simulation-local';
+    
+    // Manually trigger the order created handler
+    await webhookHandler.handle('orders/create', mockOrder, shopDomain);
+
+    res.json({
+      success: true,
+      message: 'Simulation processed successfully',
+      reward: {
+        email,
+        amount,
+        ltz_estimated: Math.floor(amount * 10)
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Simulation error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
 });
 
 /**
  * Health check for monitoring
  */
 app.get('/health', async (req, res) => {
+// ... (rest of the file)
   try {
     // Check Loyalteez API health
     let loyalteezHealth = null;

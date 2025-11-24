@@ -2,7 +2,7 @@
  * HTML Landing Page for Shopify Loyalty App
  * Includes simulation tools for testing integration
  */
-export const landingPage = `
+module.exports = { landingPage: `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +34,7 @@ export const landingPage = `
         Shopify <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Rewards Engine</span>
       </h1>
       <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-        Production-ready webhook handler for distributing crypto-rewards on the Loyalteez platform.
+        Production-ready webhook handler for distributing rewards on the Loyalteez platform.
       </p>
     </header>
 
@@ -127,7 +127,7 @@ export const landingPage = `
           </div>
           <div>
             <h3 class="font-bold text-slate-900">Instant Settlement</h3>
-            <p class="text-sm text-slate-600 mt-1">Transactions are processed on the Soneium blockchain via the Loyalteez API in real-time.</p>
+            <p class="text-sm text-slate-600 mt-1">Transactions are processed on the Loyalteez platform in real-time.</p>
           </div>
         </div>
 
@@ -203,5 +203,5 @@ export const landingPage = `
   </script>
 </body>
 </html>
-`;
+` };
 
