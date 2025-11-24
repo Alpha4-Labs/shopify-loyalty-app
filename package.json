@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "mkdir -p dist && cp worker.js dist/_worker.js && cp landing-page.js dist/landing-page.js",
+    "build": "mkdir -p dist && cp worker.js dist/_worker.js && cp landing-page-esm.js dist/landing-page-esm.js",
     "deploy": "wrangler deploy",
     "test": "node test-webhook.js",
     "test:manual": "node examples/test-manual-event.js"

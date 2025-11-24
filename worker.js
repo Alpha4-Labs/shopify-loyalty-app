@@ -15,7 +15,7 @@
 const LOYALTEEZ_API_BASE = 'https://api.loyalteez.app'; // Default to Mainnet
 const LOYALTEEZ_ENDPOINT = `${LOYALTEEZ_API_BASE}/loyalteez-api/manual-event`;
 
-import { landingPage } from './landing-page.js';
+import { landingPage } from './landing-page-esm.js';
 
 /**
  * Main worker handler
