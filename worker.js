@@ -118,6 +118,20 @@ export default {
       return handleWebhook(request, env, corsHeaders);
     }
     
+    // Try to serve static assets (like favicon.ico)
+    // This works in Cloudflare Pages (Advanced Mode) where env.ASSETS is available
+    if (env.ASSETS) {
+      try {
+        const assetResponse = await env.ASSETS.fetch(request);
+        // If found, return it
+        if (assetResponse.status !== 404) {
+          return assetResponse;
+        }
+      } catch (e) {
+        // Ignore errors and fall through to 404
+      }
+    }
+
     // 404
     return new Response('Not found', { 
       status: 404,

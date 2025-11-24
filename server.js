@@ -62,6 +62,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Serve favicon
+app.use('/favicon.ico', express.static('favicon.ico'));
+
 // ==========================================
 // ROUTES
 // ==========================================
