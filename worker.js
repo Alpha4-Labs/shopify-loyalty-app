@@ -15,6 +15,8 @@
 const LOYALTEEZ_API_BASE = 'https://api.loyalteez.app'; // Default to Mainnet
 const LOYALTEEZ_ENDPOINT = `${LOYALTEEZ_API_BASE}/loyalteez-api/manual-event`;
 
+import { landingPage } from './landing-page.js';
+
 /**
  * Main worker handler
  */
@@ -46,18 +48,69 @@ export default {
       });
     }
     
-    // Root endpoint
+    // Root endpoint - Serve Landing Page
     if (url.pathname === '/' && request.method === 'GET') {
-      return new Response(JSON.stringify({
-        status: 'ok',
-        service: 'shopify-loyalty-app-worker',
-        endpoints: {
-          webhooks: '/webhooks/shopify',
-          health: '/health'
-        }
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      return new Response(landingPage, {
+        headers: { ...corsHeaders, 'Content-Type': 'text/html' }
       });
+    }
+
+    // Simulation Endpoint
+    if (url.pathname === '/simulate' && request.method === 'POST') {
+      try {
+        const { email, amount, domain } = await request.json();
+        
+        if (!email || !amount) {
+          return new Response(JSON.stringify({ error: 'Missing email or amount' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        const orderId = Math.floor(Math.random() * 1000000000);
+        
+        // Simulate Shopify Payload
+        const mockOrder = {
+          id: orderId,
+          email: email,
+          total_price: String(amount),
+          currency: 'USD',
+          test: true, // Mark as test so we can log it
+          customer: {
+            id: Math.floor(Math.random() * 1000000000),
+            email: email,
+            first_name: 'Test',
+            last_name: 'User'
+          }
+        };
+
+        const brandId = env.LOYALTEEZ_BRAND_ID || '0x0000000000000000000000000000000000000000';
+        const apiUrl = env.LOYALTEEZ_API_URL || LOYALTEEZ_API_BASE;
+        
+        // Call the internal handler directly
+        await handleOrderCreated(mockOrder, brandId, apiUrl, domain || 'shopify-simulation');
+
+        return new Response(JSON.stringify({
+          success: true,
+          message: 'Simulation processed successfully',
+          reward: {
+            email,
+            amount,
+            ltz_estimated: Math.floor(amount * 10)
+          }
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+
+      } catch (error) {
+        return new Response(JSON.stringify({
+          success: false,
+          error: error.message
+        }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
     }
     
     // Webhook endpoint
