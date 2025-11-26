@@ -10,7 +10,7 @@ compatibility_flags = ["nodejs_compat"]
 
 # Custom Domain Route
 routes = [
-	{ pattern = "shopify-demo.loyalteez.app", custom_domain = true }
+	{ pattern = "shopify-demo.loyalteez.app/*", zone_name = "loyalteez.app" }
 ]
 
 [env.production]
